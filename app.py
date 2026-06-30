@@ -77,11 +77,6 @@ with st.sidebar:
         )
         st.session_state.selected_doc_ids = [options[n] for n in selected_names]
 
-        st.markdown(
-            scope_badge_html(len(selected_names), len(docs)),
-            unsafe_allow_html=True,
-        )
-
         with st.expander(f"Manage documents ({len(docs)})", expanded=False):
             for d in docs:
                 ftype = (d.file_type or "doc").upper()[:4]
@@ -108,6 +103,18 @@ docs = st.session_state.get("documents", [])
 selected_count = len(st.session_state.selected_doc_ids)
 if docs:
     st.markdown(scope_badge_html(selected_count, len(docs)), unsafe_allow_html=True)
+
+if not st.session_state.messages and docs:
+    st.markdown(
+        '<div class="welcome-box">'
+        "<strong>Try asking:</strong><br>"
+        "• What are the payment terms?<br>"
+        "• What is the termination clause?<br>"
+        "• Who are the parties to this agreement?<br><br>"
+        "<em>Tip: select one document in the sidebar for a focused single-contract answer.</em>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):

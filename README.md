@@ -140,6 +140,28 @@ Open `http://localhost:8501`
 
 ---
 
+## Pre-deploy checklist
+
+Run these in order before pushing to Render:
+
+```bash
+# 1. Supabase + embeddings OK
+python scripts/check_setup.py
+
+# 2. Single-document filter (no cross-doc leak)
+python scripts/test_filter.py
+
+# 3. Full RAG smoke test (Groq + Cohere + retrieval)
+python scripts/smoke_test.py
+
+# 4. UI manual check
+streamlit run app.py
+```
+
+Expected `check_setup.py` output: `Documents: 20`, `Chunks: 201`, `Embedding dim: 384`.
+
+---
+
 ## Deploy on Render
 
 ### 1. Push to GitHub

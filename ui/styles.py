@@ -149,6 +149,21 @@ div[data-testid="stFileUploader"] section {
   white-space: pre-wrap;
 }
 
+.welcome-box {
+  background: #121a28;
+  border: 1px solid #243041;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  color: #9aa7b8;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-box strong {
+  color: #c8d4e0;
+}
+
 #MainMenu, footer, header { visibility: hidden; }
 </style>
 """
