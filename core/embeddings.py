@@ -11,7 +11,7 @@ import config
 def get_embedding_model():
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer(config.EMBEDDING_MODEL)
+    return SentenceTransformer(config.EMBEDDING_MODEL, device="cpu")
 
 
 def embed_texts(texts: list[str]) -> list[list[float]]:

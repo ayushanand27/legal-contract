@@ -5,7 +5,6 @@ from __future__ import annotations
 import streamlit as st
 
 from core.chat import answer_question
-from core.embeddings import get_embedding_model
 from core.ingestion import delete_document, ingest_uploaded_file, list_documents
 from ui.render_helpers import render_answer_cards, render_citations, scope_badge_html, short_name
 from ui.styles import CUSTOM_CSS
@@ -18,15 +17,6 @@ st.set_page_config(
 )
 
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
-
-
-@st.cache_resource(show_spinner="Loading embedding model (one-time)...")
-def _load_embedding_model():
-    return get_embedding_model()
-
-
-# Warm up model once per server process — avoids slow first chat on Render
-_load_embedding_model()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
