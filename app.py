@@ -5,7 +5,9 @@ from __future__ import annotations
 import streamlit as st
 
 from core.chat import answer_question
+from core.embeddings import get_embedding_model
 from core.ingestion import delete_document, ingest_uploaded_file, list_documents
+from ui.render_helpers import render_answer_cards, render_citations, scope_badge_html, short_name
 from ui.styles import CUSTOM_CSS
 
 st.set_page_config(
@@ -16,6 +18,15 @@ st.set_page_config(
 )
 
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+
+
+@st.cache_resource(show_spinner="Loading embedding model (one-time)...")
+def _load_embedding_model():
+    return get_embedding_model()
+
+
+# Warm up model once per server process — avoids slow first chat on Render
+_load_embedding_model()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -29,37 +40,6 @@ def _refresh_documents():
 
 if "documents" not in st.session_state:
     _refresh_documents()
-
-
-def _short_name(name: str, max_len: int = 42) -> str:
-    return name if len(name) <= max_len else name[: max_len - 3] + "..."
-
-
-def _render_citations(citations: list[dict]) -> None:
-    if not citations:
-        return
-    st.markdown('<div class="sources-label">Sources</div>', unsafe_allow_html=True)
-    chips = []
-    for c in citations:
-        page = f" · p.{c['page_no']}" if c.get("page_no") else ""
-        short = _short_name(c["document_name"], 50)
-        chips.append(
-            f'<span class="citation-chip" title="{c["document_name"]}">'
-            f'📄 {short} · chunk {c["chunk_index"]}{page}</span>'
-        )
-    st.markdown(" ".join(chips), unsafe_allow_html=True)
-
-
-def _scope_badge(selected_count: int, total: int) -> str:
-    if selected_count == 0:
-        return (
-            f'<div class="scope-badge warn">🔍 Scope: All {total} documents '
-            f'(answers may combine multiple contracts)</div>'
-        )
-    label = "document" if selected_count == 1 else "documents"
-    return (
-        f'<div class="scope-badge">🔍 Scope: {selected_count} selected {label}</div>'
-    )
 
 
 st.markdown('<div class="hero-title">Legal Contract Intelligence</div>', unsafe_allow_html=True)
@@ -98,7 +78,7 @@ with st.sidebar:
         st.session_state.selected_doc_ids = [options[n] for n in selected_names]
 
         st.markdown(
-            _scope_badge(len(selected_names), len(docs)),
+            scope_badge_html(len(selected_names), len(docs)),
             unsafe_allow_html=True,
         )
 
@@ -109,7 +89,7 @@ with st.sidebar:
                 with col1:
                     st.markdown(
                         f'<div class="doc-card"><span class="doc-type">{ftype}</span>'
-                        f"{_short_name(d.name, 55)}</div>",
+                        f"{short_name(d.name, 55)}</div>",
                         unsafe_allow_html=True,
                     )
                 with col2:
@@ -127,12 +107,15 @@ with st.sidebar:
 docs = st.session_state.get("documents", [])
 selected_count = len(st.session_state.selected_doc_ids)
 if docs:
-    st.markdown(_scope_badge(selected_count, len(docs)), unsafe_allow_html=True)
+    st.markdown(scope_badge_html(selected_count, len(docs)), unsafe_allow_html=True)
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
-        _render_citations(msg.get("citations") or [])
+        if msg["role"] == "assistant":
+            render_answer_cards(msg["content"])
+        else:
+            st.markdown(msg["content"])
+        render_citations(msg.get("citations") or [])
 
 prompt = st.chat_input("Ask about termination, payment terms, liability...")
 if prompt:
@@ -151,8 +134,8 @@ if prompt:
                 answer = f"Error: {exc}"
                 citations = []
 
-        st.markdown(answer)
-        _render_citations(citations)
+        render_answer_cards(answer)
+        render_citations(citations)
 
     st.session_state.messages.append(
         {"role": "assistant", "content": answer, "citations": citations}

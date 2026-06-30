@@ -82,11 +82,22 @@ def answer_question(query: str, document_ids: list[str] | None = None) -> dict:
             "citations": [],
         }
 
-    scope_hint = (
-        "The user scoped the search to specific document(s) only. Answer using only those excerpts."
-        if document_ids
-        else "The user is searching across ALL documents. Group your answer by contract when multiple contracts are relevant."
-    )
+    if document_ids and len(document_ids) == 1:
+        scope_hint = (
+            "SINGLE DOCUMENT MODE. The user selected exactly ONE contract. "
+            "Answer ONLY from that contract. Do not mention or infer from any other contract. "
+            "Do not use multiple contract headings."
+        )
+    elif document_ids:
+        scope_hint = (
+            f"The user scoped search to {len(document_ids)} selected document(s). "
+            "Answer using only those excerpts. Group by contract if multiple are selected."
+        )
+    else:
+        scope_hint = (
+            "The user is searching across ALL documents. "
+            "Group your answer by contract when multiple contracts are relevant."
+        )
 
     context = _format_context(chunks)
     user_prompt = f"""Question:

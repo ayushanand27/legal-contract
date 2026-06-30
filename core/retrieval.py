@@ -119,4 +119,11 @@ def retrieve_chunks(query: str, document_ids: list[str] | None = None) -> list[R
             )
         )
 
-    return _cohere_rerank(query, candidates, config.RERANK_TOP_K)
+    reranked = _cohere_rerank(query, candidates, config.RERANK_TOP_K)
+
+    # Hard filter: never return chunks outside selected document scope
+    if filter_ids:
+        allowed = set(filter_ids)
+        reranked = [c for c in reranked if c.document_id in allowed]
+
+    return reranked

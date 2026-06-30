@@ -125,6 +125,30 @@ div[data-testid="stFileUploader"] section {
   font-weight: 600;
 }
 
+.answer-card {
+  background: #121a28;
+  border: 1px solid #243041;
+  border-left: 3px solid #4f8cff;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin: 0.65rem 0 1rem 0;
+}
+
+.answer-card-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #8fb8ff;
+  margin-bottom: 0.45rem;
+  letter-spacing: 0.01em;
+}
+
+.answer-card-body {
+  font-size: 0.9rem;
+  color: #c8d4e0;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
 #MainMenu, footer, header { visibility: hidden; }
 </style>
 """

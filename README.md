@@ -150,10 +150,14 @@ Ensure `.env` is **not** committed (it's in `.gitignore`).
 
 | Setting | Value |
 |---------|-------|
-| **Environment** | Python 3 |
-| **Build Command** | `pip install -r requirements.txt` |
+| **Environment** | Python 3.11 |
+| **Build Command** | `pip install --upgrade pip && pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt` |
 | **Start Command** | `streamlit run app.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true` |
-| **Plan** | Free or Starter |
+| **Plan** | Free (slow cold start) or **Starter $7** (faster, no sleep) |
+
+> **Why builds feel slow:** first deploy downloads CPU PyTorch + embedding model (~2–4 min). Use the build command above (CPU torch only, not CUDA). Data is already in Supabase — no re-seed on Render.
+
+Or use **Blueprint**: connect repo and Render reads `render.yaml` automatically.
 
 ### 3. Add environment variables
 
