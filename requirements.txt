@@ -1,11 +1,10 @@
-# Pinned for faster, reproducible Render builds.
-# Install CPU torch first in build: pip install torch --index-url https://download.pytorch.org/whl/cpu
+# Lightweight stack for Render free tier (512MB RAM) — no torch
 streamlit==1.58.0
 python-dotenv==1.2.2
 supabase==2.31.0
 groq==1.5.0
-cohere==5.15.0
-numpy==2.2.6
+cohere==5.21.1
+numpy>=1.26.0,<3
 pymupdf==1.25.5
 python-docx==1.1.2
-sentence-transformers==3.4.1
+fastembed==0.6.1

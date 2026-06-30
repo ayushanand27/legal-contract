@@ -9,17 +9,16 @@ import config
 
 @lru_cache(maxsize=1)
 def get_embedding_model():
-    from sentence_transformers import SentenceTransformer
+    from fastembed import TextEmbedding
 
-    return SentenceTransformer(config.EMBEDDING_MODEL, device="cpu")
+    return TextEmbedding(model_name=config.EMBEDDING_MODEL)
 
 
 def embed_texts(texts: list[str]) -> list[list[float]]:
     if not texts:
         return []
     model = get_embedding_model()
-    vectors = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
-    return [v.tolist() for v in vectors]
+    return [vec.tolist() for vec in model.embed(texts)]
 
 
 def embed_query(query: str) -> list[float]:

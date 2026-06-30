@@ -3,10 +3,7 @@ services:
     name: legal-contract-rag
     runtime: python
     plan: free
-    buildCommand: >-
-      pip install --upgrade pip &&
-      pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu &&
-      pip install -r requirements.txt
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: streamlit run app.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true
     healthCheckPath: /
     envVars:
@@ -16,3 +13,5 @@ services:
         value: "false"
       - key: HF_HUB_DISABLE_TELEMETRY
         value: "1"
+      - key: EMBEDDING_MODEL
+        value: BAAI/bge-small-en-v1.5

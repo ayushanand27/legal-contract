@@ -286,10 +286,20 @@ Deploy ke baad:
 
 ## 9. Deploy on Render
 
-### Build command (updated — CPU torch, faster)
+### Build command (Render — lightweight, no torch)
 
 ```
-pip install --upgrade pip && pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt
+pip install --upgrade pip && pip install -r requirements.txt
+```
+
+> **Why:** Render free tier = 512MB RAM. `torch` + `sentence-transformers` causes OOM. We use `fastembed` instead (~150MB).
+
+### After deploy — re-embed once (if embedding model changed)
+
+Run locally (same Supabase project):
+
+```bash
+python scripts/reseed_cuad.py
 ```
 
 ### Start command
